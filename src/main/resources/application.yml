@@ -1,0 +1,15 @@
+app:
+  jwtSecret: JWTSuperSecretKey
+  jwtExpirationInMs: 864000000
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/quiz?authSource=admin
+server:
+  servlet:
+    context-path: /tuto-backend
+
+jwt:
+  private.key: classpath:app.key
+  public.key: classpath:app.pub
+
