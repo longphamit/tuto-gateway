@@ -2,6 +2,7 @@ package com.longpc.tuto.api.authen.service;
 
 import com.longpc.tuto.api.authen.model.AccountPrincipleModel;
 import com.longpc.tuto.api.authen.model.SignInResponseModel;
+import com.longpc.tuto.api.constant.ExceptionEnum;
 import com.longpc.tuto.api.constant.TypeEnum;
 import com.longpc.tuto.api.data.entity.authen.Account;
 import com.longpc.tuto.api.data.entity.authen.Party;
@@ -42,19 +43,20 @@ public class AuthenService extends BaseService implements UserDetailsService {
     public SignInResponseModel signInPassword(String username, String password) {
         AccountPrincipleModel accountPrincipleModel = getAccountPrincipleByUsername(username);
         if (!passwordEncoder.matches(password, accountPrincipleModel.getPassword())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ExceptionEnum.WRONG_USERNAME_PASSWORD.name());
         }
         Instant now = Instant.now();
-        long expiry = 36000L;
+        long expiry = 60*60*24;
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("self")
+                .issuer("longpc")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiry))
-                .subject(username)
+                .subject(accountPrincipleModel.getPartyId())
                 .build();
         // @formatter:on
         String token = encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
         return SignInResponseModel.builder()
+                .partyId(accountPrincipleModel.getPartyId())
                 .token(token).build();
     }
 
@@ -92,7 +94,7 @@ public class AuthenService extends BaseService implements UserDetailsService {
     public AccountPrincipleModel getAccountPrincipleByUsername(String username) {
         Account account = accountManager.getByUsername(username);
         if (ObjectUtils.isEmpty(account)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ExceptionEnum.WRONG_USERNAME_PASSWORD.name());
         }
         return AccountPrincipleModel.create(account);
     }
@@ -108,5 +110,15 @@ public class AuthenService extends BaseService implements UserDetailsService {
             Account accountSignUp = signUp("admin", "admin", "    ", "    ", Set.of(TypeEnum.Role.ADMIN.name()));
             System.out.printf("Account admin created: %s", accountSignUp.getUsername() + " " + "admin");
         }
+    }
+    public void createUserAccount() {
+        Account account = accountManager.getByUsername("user");
+        if (ObjectUtils.isEmpty(account)) {
+            Account accountSignUp = signUp("user", "user", "    ", "    ", Set.of(TypeEnum.Role.USER.name()));
+            System.out.printf("Account user created: %s", accountSignUp.getUsername() + " " + "user");
+        }
+    }
+    public boolean checkExistUsername(String username){
+        return accountManager.checkExistUsername(username);
     }
 }

@@ -10,13 +10,16 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 public class TutoGatewayApplication {
 
-	@Autowired
-	AuthenService authenService;
-	public static void main(String[] args) {
-		SpringApplication.run(TutoGatewayApplication.class, args);
-	}
-	@EventListener(ApplicationReadyEvent.class)
-	public void doSomethingAfterStartup() {
-		authenService.createAdminAccount();
-	}
+    @Autowired
+    AuthenService authenService;
+
+    public static void main(String[] args) {
+        SpringApplication.run(TutoGatewayApplication.class, args);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void doSomethingAfterStartup() {
+        authenService.createAdminAccount();
+        authenService.createUserAccount();
+    }
 }

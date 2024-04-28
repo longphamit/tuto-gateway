@@ -31,4 +31,7 @@ public class AccountManager extends BaseManager<Account> {
 //        account.setRole(new HashSet<>());
 //        return account;
     }
+    public boolean checkExistUsername(String username){
+        return mongoTemplate.exists(Query.query(Criteria.where("username").is(username)),Account.class);
+    }
 }

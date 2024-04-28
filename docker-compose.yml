@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  quiz-portal:
+    image: longphamjustdoit/tuto-gateway
+    container_name: tuto-gateway
+    ports:
+      - "8099:8099"
+    networks:
+      - longpc-network
+networks:
+  longpc-network:
+    external: true
