@@ -3,6 +3,9 @@ package com.longpc.tuto.api.authen.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.List;
 
 /**
  * Long PC
@@ -14,4 +17,5 @@ import lombok.Setter;
 public class SignInResponseModel {
     private String partyId;
     private String token;
+    private List<GrantedAuthority> authorities;
 }

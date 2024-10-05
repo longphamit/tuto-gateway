@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,5 +34,8 @@ public class AccountManager extends BaseManager<Account> {
     }
     public boolean checkExistUsername(String username){
         return mongoTemplate.exists(Query.query(Criteria.where("username").is(username)),Account.class);
+    }
+    public List<Account> getAccounts(){
+        return mongoTemplate.findAll(Account.class);
     }
 }

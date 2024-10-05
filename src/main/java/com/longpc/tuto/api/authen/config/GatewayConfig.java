@@ -52,6 +52,8 @@ public class GatewayConfig {
             return ServerResponse.permanentRedirect(URI.create("https://api.longpc.site/gateway" + request.path().substring(9))).build();
         }).build();
     }
+
+
     @Bean
     public RouterFunction<ServerResponse> putRoute() {
         RouterFunctions.Builder route = RouterFunctions.route();

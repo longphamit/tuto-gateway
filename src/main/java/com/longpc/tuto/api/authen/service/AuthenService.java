@@ -8,7 +8,6 @@ import com.longpc.tuto.api.data.entity.authen.Account;
 import com.longpc.tuto.api.data.entity.authen.Party;
 import com.longpc.tuto.api.data.manager.AccountManager;
 import com.longpc.tuto.api.data.manager.PartyManager;
-import com.longpc.tuto.api.service.AccountService;
 import com.longpc.tuto.api.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -56,6 +55,7 @@ public class AuthenService extends BaseService implements UserDetailsService {
         // @formatter:on
         String token = encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
         return SignInResponseModel.builder()
+                .authorities(new ArrayList<>(accountPrincipleModel.getAuthorities()))
                 .partyId(accountPrincipleModel.getPartyId())
                 .token(token).build();
     }
