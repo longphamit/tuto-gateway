@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
  **/
 @RestController
 @RequestMapping("authen")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthenGateway {
     @Autowired
     private AuthenService authenService;

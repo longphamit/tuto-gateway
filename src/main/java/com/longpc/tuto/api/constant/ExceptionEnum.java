@@ -7,4 +7,5 @@ package com.longpc.tuto.api.constant;
 public enum ExceptionEnum {
     USERNAME_EXIST,
     WRONG_USERNAME_PASSWORD,
+    ACCOUNT_INACTIVE
 }

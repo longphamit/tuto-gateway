@@ -1,5 +1,6 @@
 package com.longpc.tuto.api.authen.service;
 
+import com.longpc.tuto.api.constant.TypeEnum;
 import com.longpc.tuto.api.data.entity.authen.Account;
 import com.longpc.tuto.api.data.manager.AccountManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,13 @@ public class AccountService {
             Collections.reverse(accounts);
         }
         return accounts;
+    }
+
+    public void inActive(String id) {
+        accountManager.updateAttribute(id, "status", TypeEnum.Status.IN_ACTIVE.getValue());
+    }
+
+    public void active(String id) {
+        accountManager.updateAttribute(id, "status", TypeEnum.Status.ACTIVE.getValue());
     }
 }

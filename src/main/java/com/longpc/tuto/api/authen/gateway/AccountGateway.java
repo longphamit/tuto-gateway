@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.ServerResponse;
 
 import java.util.List;
@@ -42,5 +39,45 @@ public class AccountGateway {
             }
         }
         return ResponseEntity.ok(accountService.getAccounts());
+    }
+
+    @PutMapping("/{id}/inactive")
+    public ResponseEntity inactiveAccount(
+            @PathVariable("id") String id,
+            @RequestHeader("Authorization") String token) {
+        if (ObjectUtils.isEmpty(token)) {
+            return ResponseEntity.badRequest().body("Authorization is required");
+        } else {
+            try {
+                if (!token.startsWith("Bearer")) {
+                    return ResponseEntity.badRequest().body("Token is invalid");
+                }
+                decoder.decode(token.substring(7));
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body("Token is invalid");
+            }
+        }
+        accountService.inActive(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/active")
+    public ResponseEntity activeAccount(
+            @PathVariable("id") String id,
+            @RequestHeader("Authorization") String token) {
+        if (ObjectUtils.isEmpty(token)) {
+            return ResponseEntity.badRequest().body("Authorization is required");
+        } else {
+            try {
+                if (!token.startsWith("Bearer")) {
+                    return ResponseEntity.badRequest().body("Token is invalid");
+                }
+                decoder.decode(token.substring(7));
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body("Token is invalid");
+            }
+        }
+        accountService.active(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -20,19 +20,25 @@ public class AccountPrincipleModel extends Account implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public AccountPrincipleModel(String id, String partyId, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    public AccountPrincipleModel(String id,
+                                 String partyId,
+                                 String username,
+                                 String password,
+                                 int status,
+                                 Collection<? extends GrantedAuthority> authorities) {
         super();
         this.setId(id);
         this.username = username;
         this.password = password;
         this.authorities = authorities;
         this.partyId = partyId;
+        this.status = status;
     }
 
     public static AccountPrincipleModel create(Account account) {
         Set<String> roles = account.getRole();
         List<GrantedAuthority> authorities = roles.stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList());
-        return new AccountPrincipleModel(account.getId(), account.getPartyId(), account.getUsername(), account.getPassword(), authorities);
+        return new AccountPrincipleModel(account.getId(), account.getPartyId(), account.getUsername(), account.getPassword(), account.getStatus(), authorities);
     }
 
     @Override

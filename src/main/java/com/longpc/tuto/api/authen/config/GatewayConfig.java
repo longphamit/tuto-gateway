@@ -1,6 +1,5 @@
 package com.longpc.tuto.api.authen.config;
 
-import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +28,8 @@ import java.net.URI;
 public class GatewayConfig {
     @Autowired
     JwtDecoder decoder;
+    private static final String API_GATEWAY = "https://api.longpc.site/gateway";
+    //private static final String API_GATEWAY = "http://localhost:8080/gateway";
 
     @Bean
     public RouterFunction<ServerResponse> getRoute() {
@@ -43,13 +44,13 @@ public class GatewayConfig {
                     if (!token.startsWith("Bearer")) {
                         return ServerResponse.badRequest().body("Token is invalid");
                     }
-                    Jwt jwt=decoder.decode(token.substring(7));
-                    log.info("check jwt: {}",jwt.getClaims());
+                    Jwt jwt = decoder.decode(token.substring(7));
+                    log.info("check jwt: {}", jwt.getClaims());
                 } catch (Exception e) {
                     return ServerResponse.badRequest().body("Token is invalid");
                 }
             }
-            return ServerResponse.permanentRedirect(URI.create("https://api.longpc.site/gateway" + request.path().substring(9))).build();
+            return ServerResponse.permanentRedirect(URI.create(API_GATEWAY + request.path().substring(9))).build();
         }).build();
     }
 
@@ -57,7 +58,7 @@ public class GatewayConfig {
     @Bean
     public RouterFunction<ServerResponse> putRoute() {
         RouterFunctions.Builder route = RouterFunctions.route();
-        RestTemplate restTemplate= new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         return route.PUT("/quiz-api/**", request -> {
             String token = "";
             if (ObjectUtils.isEmpty(request.headers().header("Authorization"))) {
@@ -68,8 +69,8 @@ public class GatewayConfig {
                     if (!token.startsWith("Bearer")) {
                         return ServerResponse.badRequest().body("Token is invalid");
                     }
-                    Jwt jwt=decoder.decode(token.substring(7));
-                    log.info("check jwt: {}",jwt.getClaims());
+                    Jwt jwt = decoder.decode(token.substring(7));
+                    log.info("check jwt: {}", jwt.getClaims());
                 } catch (Exception e) {
                     return ServerResponse.badRequest().body("Token is invalid");
                 }
@@ -78,14 +79,15 @@ public class GatewayConfig {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Object> requestEntity = new HttpEntity<>(request.body(Object.class), headers);
 
-            restTemplate.put("https://api.longpc.site/gateway" + request.path().substring(9),requestEntity);
+            restTemplate.put(API_GATEWAY + request.path().substring(9), requestEntity);
             return ServerResponse.ok().build();
         }).build();
     }
+
     @Bean
     public RouterFunction<ServerResponse> postRoute() {
         RouterFunctions.Builder route = RouterFunctions.route();
-        RestTemplate restTemplate= new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         return route.POST("/quiz-api/**", request -> {
             String token = "";
             if (ObjectUtils.isEmpty(request.headers().header("Authorization"))) {
@@ -96,8 +98,8 @@ public class GatewayConfig {
                     if (!token.startsWith("Bearer")) {
                         return ServerResponse.badRequest().body("Token is invalid");
                     }
-                    Jwt jwt=decoder.decode(token.substring(7));
-                    log.info("check jwt: {}",jwt.getClaims());
+                    Jwt jwt = decoder.decode(token.substring(7));
+                    log.info("check jwt: {}", jwt.getClaims());
                 } catch (Exception e) {
                     return ServerResponse.badRequest().body("Token is invalid");
                 }
@@ -106,7 +108,7 @@ public class GatewayConfig {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Object> requestEntity = new HttpEntity<>(request.body(Object.class), headers);
 
-            Object o= restTemplate.postForObject("https://api.longpc.site/gateway" + request.path().substring(9),requestEntity,Object.class);
+            Object o = restTemplate.postForObject(API_GATEWAY + request.path().substring(9), requestEntity, Object.class);
             return ServerResponse.ok().body(o);
         }).build();
     }

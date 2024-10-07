@@ -22,6 +22,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -44,8 +45,11 @@ public class AuthenService extends BaseService implements UserDetailsService {
         if (!passwordEncoder.matches(password, accountPrincipleModel.getPassword())) {
             throw new IllegalArgumentException(ExceptionEnum.WRONG_USERNAME_PASSWORD.name());
         }
+        if (accountPrincipleModel.getStatus() == TypeEnum.Status.IN_ACTIVE.getValue()) {
+            throw new IllegalArgumentException(ExceptionEnum.ACCOUNT_INACTIVE.name());
+        }
         Instant now = Instant.now();
-        long expiry = 60*60*24;
+        long expiry = 60 * 60 * 24;
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("longpc")
                 .issuedAt(now)
@@ -72,6 +76,7 @@ public class AuthenService extends BaseService implements UserDetailsService {
         party.setEmail(email);
         party.setPhone(phone);
         party.setStatus(TypeEnum.Status.ACTIVE.getValue());
+        party.setCreatedTime(new Date());
         Party rsParty = partyManager.save(party);
         // khoi tao account
         Account account = new Account();
@@ -80,15 +85,8 @@ public class AuthenService extends BaseService implements UserDetailsService {
         account.setRole(roles);
         account.setPassword(encodedPassword);
         account.setPartyId(rsParty.getId());
+        account.setCreatedTime(new Date());
         return accountManager.save(account);
-    }
-
-    public void inActive() {
-
-    }
-
-    public void active() {
-
     }
 
     public AccountPrincipleModel getAccountPrincipleByUsername(String username) {
@@ -111,6 +109,7 @@ public class AuthenService extends BaseService implements UserDetailsService {
             System.out.printf("Account admin created: %s", accountSignUp.getUsername() + " " + "admin");
         }
     }
+
     public void createUserAccount() {
         Account account = accountManager.getByUsername("user");
         if (ObjectUtils.isEmpty(account)) {
@@ -118,7 +117,8 @@ public class AuthenService extends BaseService implements UserDetailsService {
             System.out.printf("Account user created: %s", accountSignUp.getUsername() + " " + "user");
         }
     }
-    public boolean checkExistUsername(String username){
+
+    public boolean checkExistUsername(String username) {
         return accountManager.checkExistUsername(username);
     }
 }
